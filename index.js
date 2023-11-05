@@ -202,19 +202,46 @@ app.post('/s1/exercice10', (req, res) => {
 });
 
 app.post('/s2/exercice1', (req, res) => {
-    return res.json([{ reponse: 0 }]);
+    const dateDixAnsAuparavant = dateIlYADixAns();
+    return res.json([{ reponse: dateDixAnsAuparavant }]);
 });
 
 app.post('/s2/exercice2', (req, res) => {
-    return res.json([{ reponse: 0 }]);
+    const date = req.body.date;
+
+    if (!date) {
+        return res.json([{ reponse: "Veuillez entrer une date valide" }]);
+    }
+
+    const dateFormatee = formaterDate(new Date(date));
+    return res.json([{ reponse: dateFormatee }]);
 });
 
 app.post('/s2/exercice3', (req, res) => {
-    return res.json([{ reponse: 0 }]);
+    const date1 = req.body.date1;
+    const date2 = req.body.date2;
+
+    if (!date1 || !date2) {
+        return res.json([{ reponse: "Veuillez entrer deux dates valides" }]);
+    }
+
+    const difference = differenceEnJours(new Date(date1), new Date(date2));
+    return res.json([{ reponse: difference }]);
 });
 
 app.post('/s2/exercice4', (req, res) => {
-    return res.json([{ reponse: 0 }]);
+    const date = req.body.date;
+    const jours = req.body.jours;
+
+    try {
+        // Appel de la fonction ajouterJours en passant les paramètres date et jours
+        const dateAvecJours = ajouterJours(new Date(date), parseInt(jours));
+        // Renvoie la date résultante dans la réponse JSON
+        return res.json([{ reponse: dateAvecJours }]);
+    } catch (error) {
+        // En cas d'erreur, renvoie un message d'erreur approprié dans la réponse JSON
+        return res.json([{ reponse: "Veuillez entrer une date valide et un nombre de jours valide" }]);
+    }
 });
 
 app.post('/s2/exercice5', (req, res) => {

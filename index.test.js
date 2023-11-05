@@ -338,3 +338,104 @@ describe('POST /s1/exercice10', () => {
         expect(res.body).toEqual([{reponse : "Veuillez entrer un nombre valide"}])
     });
 });
+
+describe('POST /s2/exercice1', () => {
+    test('Test date il y a 10 ans', async () => {
+        const res = await request(app)
+            .post('/s2/exercice1');
+
+        const dateActuelle = new Date(); //Crée un nouvel objet Date en utilisant la date actuelle
+        //Créé une nouvelle instance de l'objet Date en utilisant la valeur de l'objet dateActuelle.
+        const dateIlYADixAns = new Date(dateActuelle);  //Cela signifie que dateIlYADixAns contient également la même date et heure que dateActuelle
+        dateIlYADixAns.setFullYear(dateIlYADixAns.getFullYear() - 10); //Modifie l'année de l'objet dateIlYADixAns en soustrayant 10 ans à l'année actuelle.
+        const dateAttendue = dateIlYADixAns.toISOString().split('T')[0]; //Converti l'objet dateIlYADixAns en une chaîne de caractères au format ISO 8601 en utilisant la méthode toISOString()
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: dateAttendue }]);
+    });
+});
+
+describe('POST /s2/exercice2', () => {
+    test('Test formatage de date', async () => {
+        const res = await request(app)
+            .post('/s2/exercice2')
+            .send({ date: "2023-11-03" });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: "03/11/2023" }]);
+    });
+
+    test('Test date non valide', async () => {
+        const res = await request(app)
+            .post('/s2/exercice2')
+            .send({ date: "Date_invalide" });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: "Veuillez entrer une date valide" }]);
+    });
+});
+
+describe('POST /s2/exercice3', () => {
+    test('Test calcul de la différence en jours', async () => {
+        const res = await request(app)
+            .post('/s2/exercice3')
+            .send({ date1: "2023-11-03", date2: "2023-11-10" });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: 7 }]);
+    });
+
+    test('Test dates non valides', async () => {
+        const res = await request(app)
+            .post('/s2/exercice3')
+            .send({ date1: "date_invalide", date2: "2023-11-10" });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: "Veuillez entrer des dates valides" }]);
+    });
+});
+
+describe('POST /s2/exercice4', () => {
+    test('Test ajout de jours à une date', async () => {
+        const res = await request(app)
+            .post('/s2/exercice4')
+            .send({ date: "2023-11-03", jours: 5 });
+
+        expect(res.statusCode).toEqual(200);
+        // Vérifie que la date résultante est correcte
+        expect(res.body).toEqual([{ reponse: "2023-11-08" }]);
+    });
+
+    test('Test date non valide', async () => {
+        const res = await request(app)
+            .post('/s2/exercice4')
+            .send({ date: "date_invalide", jours: 5 });
+
+        expect(res.statusCode).toEqual(200);
+        // Vérifie que la réponse est un message d'erreur approprié
+        expect(res.body).toEqual([{ reponse: "Veuillez entrer une date valide et un nombre de jours valide" }]);
+    });
+
+    test('Test jours non valide', async () => {
+        const res = await request(app)
+            .post('/s2/exercice4')
+            .send({ date: "2023-11-03", jours: "jours_invalide" });
+
+        expect(res.statusCode).toEqual(200);
+        // Vérifie que la réponse est un message d'erreur approprié
+        expect(res.body).toEqual([{ reponse: "Veuillez entrer une date valide et un nombre de jours valide" }]);
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
