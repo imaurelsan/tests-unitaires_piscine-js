@@ -17,5 +17,5 @@
     "jest": "^29.7.0",
     "supertest": "^6.3.3"
   },
-  "repository": "https://github.com/imaurelsan/piscine-js.git"
+  "repository": "https://github.com/imaurelsan/tests-unitaires_piscine-js.git"
 }
