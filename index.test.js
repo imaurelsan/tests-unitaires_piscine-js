@@ -427,15 +427,164 @@ describe('POST /s2/exercice4', () => {
     });
 });
 
+describe('POST /s2/exercice5', () => {
+    test('Test année bissextile', async () => {
+        const res = await request(app)
+            .post('/s2/exercice5')
+            .send({ annee: 2000 });
 
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: 1 }]);
+    });
+    test('Test année non bissextile', async () => {
+        const res = await request(app)
+            .post('/s2/exercice5')
+            .send({ annee: 2022 });
 
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: 0 }]);
+    });
+    test('Test champ annee manquant', async () => {
+        const res = await request(app)
+            .post('/s2/exercice5')
+            .send({});
 
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: "Veuillez entrer une année valide" }]);
+    });
+});
 
+describe('POST /s2/exercice6', () => {
+    test('Test premier jour du mois', async () => {
+        const res = await request(app)
+            .post('/s2/exercice6')
+            .send({ date: '2023-11-04' });
+        // Date attendue : 1er novembre 2023 à 00:00:00 UTC
+        const expectedDate = new Date('2023-11-01T00:00:00.000Z');
+        expect(res.statusCode).toEqual(200);
+        // Vérifie que le mois de la date renvoyée est le même que celui de la date attendue
+        expect(new Date(res.body[0].reponse).getMonth()).toEqual(expectedDate.getMonth());
+        // Vérifie que l'année de la date renvoyée est la même que celle de la date attendue
+        expect(new Date(res.body[0].reponse).getFullYear()).toEqual(expectedDate.getFullYear());
+    });
+    test('Test date non valide', async () => {
+        const res = await request(app)
+            .post('/s2/exercice6')
+            .send({ date: 'non-une-date' });
+        // Vérifie que le statut de la réponse est 400 (erreur client) parce que c'est une erreur
+        expect(res.statusCode).toEqual(400);
+        // Vérifie que la réponse indique "Veuillez entrer une date valide"
+        expect(res.body[0].reponse).toEqual("Veuillez entrer une date valide");
+    });
+});
 
+describe('POST /s2/exercice7', () => {
+    // Test lorsque la date est valide
+    test('Test date valide', async () => {
+        const res = await request(app)
+            .post('/s2/exercice7')
+            .send({ date: '2023-11-04' });
 
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: 30 }]);
+    });
 
+    // Test lorsque la date est invalide
+    test('Test date invalide', async () => {
+        const res = await request(app)
+            .post('/s2/exercice7')
+            .send({ date: '2023-13-32' });
 
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toEqual([{ reponse: "La date n'est pas valide" }]);
+    });
 
+    // Test lorsque la date est manquante
+    test('Test date manquante', async () => {
+        const res = await request(app)
+            .post('/s2/exercice7')
+            .send({});
 
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toEqual([{ reponse: "La date n'est pas valide" }]);
+    });
+});
 
+describe('POST /s2/exercice8', () => {
+    test('Test formatage de durée valide', async () => {
+        const res = await request(app)
+            .post('/s2/exercice8')
+            .send({ heures: 2, minutes: 30 });
 
+        // Vérifie que la réponse est un succès (statut 200) et que la réponse est correcte
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: '2 heure(s) et 30 minute(s)' }]);
+    });
+});
+
+describe('POST /s2/exercice9', () => {
+    test('Test chevauchement de dates (non chevauchantes)', async () => {
+        const res = await request(app)
+            .post('/s2/exercice9')
+            .send({ debut1: '2023-01-01', fin1: '2023-01-15', debut2: '2023-02-01', fin2: '2023-02-15' });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: true }]);
+    });
+
+    test('Test chevauchement de dates (chevauchantes)', async () => {
+        const res = await request(app)
+            .post('/s2/exercice9')
+            .send({ debut1: '2023-01-01', fin1: '2023-01-15', debut2: '2023-01-10', fin2: '2023-02-15' });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: false }]);
+    });
+
+    test('Test chevauchement de dates (chevauchantes sur les bords)', async () => {
+        const res = await request(app)
+            .post('/s2/exercice9')
+            .send({ debut1: '2023-01-01', fin1: '2023-01-15', debut2: '2023-01-15', fin2: '2023-02-15' });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: false }]);
+    });
+
+    test('Test chevauchement de dates (une plage incluse dans l_autre)', async () => {
+        const res = await request(app)
+            .post('/s2/exercice9')
+            .send({ debut1: '2023-01-01', fin1: '2023-02-15', debut2: '2023-01-10', fin2: '2023-02-01' });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: false }]);
+    });
+});
+
+describe('POST /s2/exercice10', () => {
+    test('Test calculer l\'âge', async () => {
+        const res = await request(app)
+            .post('/s2/exercice10')
+            .send({ dateNaissance: '1990-05-15' });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: 33 }]); // Vérifier la réponse attendue qui est l'âge calculé (33 ans)
+    });
+
+    test('Test date de naissance manquante', async () => {
+        const res = await request(app)
+            .post('/s2/exercice10')
+            .send({ dateNaissance: null });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual([{ reponse: "Veuillez entrer une date de naissance" }]); // Vérifier la réponse attendue en cas de date de naissance manquante
+    });
+
+    test('Test date de naissance non valide', async () => {
+        const res = await request(app)
+            .post('/s2/exercice10')
+            .send({ dateNaissance: 'invalid-date' });
+    
+        expect(res.statusCode).toEqual(200); // Vérifier que la réponse a un statut 200 (succès)
+        expect(res.body).toEqual([{ reponse: null }]); // Mettre à jour la réponse attendue en cas de date de naissance non valide
+    });    
+});
